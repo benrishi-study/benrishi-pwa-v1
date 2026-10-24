@@ -104,7 +104,24 @@ button { -webkit-tap-highlight-color: transparent; }
 .result-badge { display: inline-flex; align-self: flex-start; min-height: 36px; align-items: center; padding: 0 13px; border-radius: 999px; background: #edf2f5; color: var(--muted); font-weight: 850; }
 .result-badge.correct { background: var(--green-soft); color: var(--green); }
 .result-badge.wrong { background: var(--red-soft); color: var(--red); }
-.explanation-text { flex: 1; font-size: clamp(18px, 1.7vw, 25px); line-height: 1.85; font-weight: 620; padding: 28px 2px 20px; white-space: pre-wrap; }
+.explanation-text { flex: 1; padding: 28px 2px 20px; white-space: normal; }
+.answer-verdict {
+  font-size: clamp(32px, 2.8vw, 46px);
+  line-height: 1.22;
+  font-weight: 900;
+  letter-spacing: .01em;
+  margin-bottom: 22px;
+  color: var(--navy);
+}
+.answer-verdict.verdict-circle { color: var(--green); }
+.answer-verdict.verdict-cross { color: var(--red); }
+.answer-reason {
+  font-size: clamp(18px, 1.7vw, 25px);
+  line-height: 1.85;
+  font-weight: 620;
+  white-space: pre-wrap;
+}
+
 .article-box { border-top: 1px solid var(--line); padding-top: 18px; color: var(--ink); }
 .article-label { color: var(--muted); font-size: 11px; letter-spacing: .12em; font-weight: 850; margin-bottom: 7px; }
 .quiz-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 22px; }

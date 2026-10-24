@@ -173,7 +173,23 @@
       pane.classList.remove('waiting');
       badge.textContent = state.correct ? '✓ 正解' : `✕ 不正解（正解：${q.answer}）`;
       badge.className = `result-badge ${state.correct ? 'correct' : 'wrong'}`;
-      byId('explanation-text').textContent = q.explanation || `正解：${q.answer}`;
+      const explanationEl = byId('explanation-text');
+      const rawExplanation = (q.explanation || '').trim();
+      const verdictPattern = /^正解\s*[：:]\s*[○×]\s*/;
+      const reasonText = rawExplanation.replace(verdictPattern, '').trim();
+      explanationEl.replaceChildren();
+
+      const verdictEl = document.createElement('div');
+      verdictEl.className = `answer-verdict verdict-${q.answer === '○' ? 'circle' : 'cross'}`;
+      verdictEl.textContent = `正解：${q.answer}`;
+      explanationEl.appendChild(verdictEl);
+
+      if (reasonText) {
+        const reasonEl = document.createElement('div');
+        reasonEl.className = 'answer-reason';
+        reasonEl.textContent = reasonText;
+        explanationEl.appendChild(reasonEl);
+      }
       byId('article-text').textContent = q.articles || '—';
     } else {
       pane.classList.add('waiting');
