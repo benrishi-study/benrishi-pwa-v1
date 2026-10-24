@@ -1,0 +1,26 @@
+{
+  "name": "弁理士ミニテスト",
+  "short_name": "弁理士ミニテスト",
+  "description": "○×をバンバン解いて、苦手を自動で復習する弁理士試験学習PWA",
+  "lang": "ja-JP",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#f4f6f8",
+  "theme_color": "#183a5a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

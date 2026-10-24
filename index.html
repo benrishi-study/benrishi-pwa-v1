@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#183a5a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="弁理士ミニテスト" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>弁理士ミニテスト</title>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">弁</div>
+        <div>
+          <div class="brand-title">弁理士ミニテスト</div>
+          <div class="brand-sub">iPad横画面 / MacBook</div>
+        </div>
+      </div>
+      <nav class="nav-tabs" aria-label="メインメニュー">
+        <button class="nav-btn active" data-screen="home">ホーム</button>
+        <button class="nav-btn" data-screen="quiz">ミニテスト</button>
+        <button class="nav-btn" data-screen="review">苦手復習</button>
+        <button class="nav-btn" data-screen="stats">成績</button>
+      </nav>
+    </header>
+
+    <main class="main-area">
+      <section id="screen-home" class="screen active">
+        <div class="home-grid">
+          <article class="hero-card card">
+            <span class="eyebrow">TODAY</span>
+            <h1>今日の10問</h1>
+            <p>苦手を多めに、NEWも混ぜて自動出題します。</p>
+            <button id="start-today" class="primary-action">10問スタート <span>→</span></button>
+            <div class="mini-note">D 4問 / C 2問 / B 1問 / A 1問 / NEW 2問を目安に選びます。</div>
+          </article>
+
+          <article class="card metric-card">
+            <span class="eyebrow">TODAY</span>
+            <div class="metric-label">今日の正答率</div>
+            <div id="home-today-rate" class="metric-value">—</div>
+            <div id="home-today-count" class="metric-sub">まだ解答していません</div>
+          </article>
+
+          <article class="card metric-card">
+            <span class="eyebrow">WEAK</span>
+            <div class="metric-label">苦手問題</div>
+            <div id="home-weak-count" class="metric-value">0</div>
+            <div class="metric-sub">C・Dランク</div>
+          </article>
+
+          <article class="card metric-card">
+            <span class="eyebrow">NEW</span>
+            <div class="metric-label">未回答</div>
+            <div id="home-new-count" class="metric-value">0</div>
+            <div id="home-total-count" class="metric-sub">全0問</div>
+          </article>
+
+          <article class="card wide-card">
+            <div class="section-title-row">
+              <div>
+                <span class="eyebrow">PRACTICE</span>
+                <h2>分野を選んで演習</h2>
+              </div>
+            </div>
+            <div class="inline-controls">
+              <select id="home-field-select" class="select-control"></select>
+              <button id="start-field" class="secondary-action">10問出題</button>
+            </div>
+          </article>
+
+          <article class="card wide-card data-card">
+            <div>
+              <span class="eyebrow">DATA</span>
+              <h2>問題データ</h2>
+              <p id="bank-status">初期20問を読み込み済みです。</p>
+              <div class="mini-note">学習履歴はこの端末に保存します。問題IDが同じならExcel更新後も履歴を引き継ぎます。</div>
+            </div>
+            <div class="data-actions">
+              <label class="secondary-action file-label">Excelから追加・更新
+                <input id="excel-file" type="file" accept=".xlsx,.xls" hidden />
+              </label>
+              <button id="reset-bank" class="ghost-action">初期20問に戻す</button>
+            </div>
+          </article>
+        </div>
+        <div class="install-hint">iPadではSafariで開き、共有メニューから「ホーム画面に追加」するとアプリ風に使えます。</div>
+      </section>
+
+      <section id="screen-quiz" class="screen">
+        <div class="quiz-shell">
+          <div class="quiz-toolbar">
+            <div>
+              <span id="quiz-field" class="pill">—</span>
+              <span id="quiz-rank" class="rank-pill rank-new">NEW</span>
+            </div>
+            <div class="quiz-progress-wrap">
+              <span id="quiz-counter">0 / 0</span>
+              <div class="progress-track"><div id="quiz-progress" class="progress-bar"></div></div>
+            </div>
+          </div>
+
+          <div class="quiz-layout">
+            <article class="question-pane">
+              <div class="question-meta">
+                <div id="quiz-unit" class="unit-title">ミニテスト</div>
+                <div id="quiz-point" class="point-title">今日の10問を始めてください。</div>
+              </div>
+              <div id="quiz-question" class="question-text">ホームから「10問スタート」を押すと始まります。</div>
+              <div id="answer-buttons" class="answer-buttons">
+                <button class="answer-btn circle-btn" data-answer="○"><span>○</span><small>正しい</small></button>
+                <button class="answer-btn cross-btn" data-answer="×"><span>×</span><small>誤り</small></button>
+              </div>
+              <div class="shortcut-hint">Mac: O = ○ / X = × / Enter = 次へ</div>
+            </article>
+
+            <article id="explanation-pane" class="explanation-pane waiting">
+              <div id="result-badge" class="result-badge">回答すると解説を表示</div>
+              <div id="explanation-text" class="explanation-text">ここに「正解 → 理由 → 条文 → 趣旨」を表示します。</div>
+              <div class="article-box">
+                <div class="article-label">条文</div>
+                <div id="article-text">—</div>
+              </div>
+              <div class="quiz-nav">
+                <button id="prev-question" class="ghost-action">← 前へ</button>
+                <button id="next-question" class="primary-action compact">次の問題 →</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-review" class="screen">
+        <div class="page-header">
+          <div>
+            <span class="eyebrow">REVIEW</span>
+            <h1>苦手復習</h1>
+            <p>正答率だけでなく、直近の回答と連続正解も反映してランク分けします。</p>
+          </div>
+          <select id="review-field-select" class="select-control"></select>
+        </div>
+        <div class="review-grid">
+          <article class="card review-card danger-card">
+            <div class="rank-big">D</div>
+            <div><h2>重点復習</h2><p id="review-d-count">0問</p></div>
+            <button id="start-d" class="secondary-action">Dだけ出題</button>
+          </article>
+          <article class="card review-card warn-card">
+            <div class="rank-big">C</div>
+            <div><h2>やや不安</h2><p id="review-c-count">0問</p></div>
+            <button id="start-cd" class="secondary-action">C・Dから10問</button>
+          </article>
+          <article class="card review-card">
+            <div class="rank-big">↺</div>
+            <div><h2>最近の誤答</h2><p id="review-missed-count">0問</p></div>
+            <button id="start-missed" class="secondary-action">最近間違えた問題</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="screen-stats" class="screen">
+        <div class="page-header">
+          <div>
+            <span class="eyebrow">STATS</span>
+            <h1>成績</h1>
+            <p>分野ごとの正答率と苦手数を確認できます。</p>
+          </div>
+        </div>
+        <div class="stats-summary">
+          <article class="card metric-card"><div class="metric-label">総回答数</div><div id="stats-attempts" class="metric-value">0</div></article>
+          <article class="card metric-card"><div class="metric-label">通算正答率</div><div id="stats-rate" class="metric-value">—</div></article>
+          <article class="card metric-card"><div class="metric-label">Aランク</div><div id="stats-a" class="metric-value">0</div></article>
+          <article class="card metric-card"><div class="metric-label">Dランク</div><div id="stats-d" class="metric-value">0</div></article>
+        </div>
+        <article class="card stats-table-card">
+          <table class="stats-table">
+            <thead><tr><th>分野</th><th>回答済み</th><th>正答率</th><th>C</th><th>D</th></tr></thead>
+            <tbody id="stats-table-body"></tbody>
+          </table>
+        </article>
+        <div class="stats-actions"><button id="reset-progress" class="ghost-action danger-text">学習履歴をリセット</button></div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="seed-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
