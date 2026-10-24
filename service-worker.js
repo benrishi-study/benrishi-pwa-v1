@@ -1,5 +1,5 @@
 
-const CACHE = 'benrishi-mini-v1.0.1';
+const CACHE = 'benrishi-mini-v1.0.2';
 const CORE = [
   './', './index.html', './styles.css', './app.js', './seed-data.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',

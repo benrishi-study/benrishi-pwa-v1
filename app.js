@@ -171,7 +171,7 @@
     const badge = byId('result-badge');
     if (state) {
       pane.classList.remove('waiting');
-      badge.textContent = state.correct ? '✓ 正解' : `✕ 不正解（正解：${q.answer}）`;
+      badge.textContent = state.correct ? '✓ あなたの回答：正解' : `✕ あなたの回答：不正解（${state.answer}）`;
       badge.className = `result-badge ${state.correct ? 'correct' : 'wrong'}`;
       const explanationEl = byId('explanation-text');
       const rawExplanation = (q.explanation || '').trim();

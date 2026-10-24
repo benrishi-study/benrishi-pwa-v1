@@ -101,7 +101,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .shortcut-hint { color: #9aa7b3; font-size: 11px; text-align: center; margin-top: 10px; }
 .explanation-pane { display: flex; flex-direction: column; }
 .explanation-pane.waiting { background: #f8fafb; }
-.result-badge { display: inline-flex; align-self: flex-start; min-height: 36px; align-items: center; padding: 0 13px; border-radius: 999px; background: #edf2f5; color: var(--muted); font-weight: 850; }
+.result-badge { display: inline-flex; align-self: flex-start; min-height: 56px; align-items: center; padding: 0 20px; border-radius: 999px; background: #edf2f5; color: var(--muted); font-size: clamp(20px, 1.7vw, 28px); line-height: 1.2; font-weight: 900; letter-spacing: .01em; box-shadow: 0 6px 16px rgba(20,40,60,.08); }
 .result-badge.correct { background: var(--green-soft); color: var(--green); }
 .result-badge.wrong { background: var(--red-soft); color: var(--red); }
 .explanation-text { flex: 1; padding: 28px 2px 20px; white-space: normal; }
