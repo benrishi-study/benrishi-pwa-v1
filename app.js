@@ -27,7 +27,7 @@
   function saveAll() {
     localStorage.setItem(KEYS.bank, JSON.stringify(questionBank));
     localStorage.setItem(KEYS.progress, JSON.stringify(progress));
-    localStorage.setItem(KEYS.attempts, JSON.stringify(attemptLog.slice(-800)));
+    localStorage.setItem(KEYS.attempts, JSON.stringify(attemptLog.slice(-5000)));
   }
   function showToast(msg) {
     const t = byId('toast');
@@ -215,9 +215,10 @@
     p.lastCorrect = correct;
     progress[q.id] = p;
     answeredInSession[q.id] = { answer, correct };
-    attemptLog.push({ id: q.id, correct, at: p.lastAnswered, day: todayKey() });
-    attemptLog = attemptLog.slice(-800);
+    attemptLog.push({ uid: (crypto.randomUUID ? crypto.randomUUID() : `${q.id}-${Date.now()}-${Math.random().toString(36).slice(2)}`), id: q.id, correct, at: p.lastAnswered, day: todayKey() });
+    attemptLog = attemptLog.slice(-5000);
     saveAll();
+    window.dispatchEvent(new CustomEvent('benrishi:progress-changed'));
     renderQuestion();
     renderHome();
   }
@@ -305,13 +306,14 @@
   }
 
   function resetBank() {
-    if (!confirm('問題データを初期20問に戻します。学習履歴は残します。よろしいですか？')) return;
-    questionBank = clone(window.SEED_QUESTIONS || []); saveAll(); populateFieldSelects(); renderHome(); renderReview(); renderStats();
-    showToast('問題データを初期20問に戻しました。');
+    if (!confirm('この端末内の問題データをクリアします。Google Drive上のquestions.xlsxは削除されません。よろしいですか？')) return;
+    questionBank = []; saveAll(); populateFieldSelects(); renderHome(); renderReview(); renderStats();
+    showToast('端末内の問題データをクリアしました。Driveから再同期できます。');
   }
   function resetProgress() {
     if (!confirm('学習履歴をすべてリセットします。問題データは残ります。よろしいですか？')) return;
     progress = {}; attemptLog = []; saveAll(); renderHome(); renderReview(); renderStats();
+    window.dispatchEvent(new CustomEvent('benrishi:progress-changed'));
     showToast('学習履歴をリセットしました。');
   }
 
@@ -347,6 +349,50 @@
     if (e.key.toLowerCase()==='x') answerCurrent('×');
     if (e.key==='Enter' && session.length) nextQuestion();
   });
+
+  // Public bridge for Google Drive sync (v1.1)
+  window.BenrishiApp = {
+    getQuestionBank: () => clone(questionBank),
+    getProgressState: () => ({ progress: clone(progress), attemptLog: clone(attemptLog) }),
+    setProgressState: (state = {}) => {
+      progress = clone(state.progress || {});
+      attemptLog = clone(state.attemptLog || []).slice(-5000);
+      saveAll(); renderHome(); renderReview(); renderStats();
+    },
+    replaceQuestionBank: (bank = []) => {
+      if (!Array.isArray(bank) || !bank.length) throw new Error('問題データが空です。');
+      questionBank = clone(bank);
+      saveAll(); populateFieldSelects(); renderHome(); renderReview(); renderStats();
+    },
+    parseQuestionWorkbook: (buffer) => {
+      if (!window.XLSX) throw new Error('Excel読込ライブラリが読み込まれていません。');
+      const wb = XLSX.read(buffer, {type:'array'});
+      const preferred = ['問題データ','ミニテスト試作20問'];
+      const sheetName = preferred.find(n => wb.SheetNames.includes(n)) || wb.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {defval:''});
+      const bank = [];
+      let ignored = 0;
+      rows.forEach(r => {
+        const id = String(r['問題ID']||'').trim();
+        const question = String(r['問題文']||'').trim();
+        const answer = String(r['正解']||'').trim();
+        if (!id || !question || !['○','×'].includes(answer)) { ignored++; return; }
+        bank.push({
+          id,
+          field: String(r['分野']||'').trim() || '未分類',
+          unit: String(r['単元']||'').trim(),
+          point: String(r['論点']||'').trim(),
+          question,
+          answer,
+          explanation: String(r['解説']||'').trim() || `正解：${answer}`,
+          articles: String(r['条文']||'').trim()
+        });
+      });
+      return { bank, ignored, sheetName };
+    },
+    refresh: () => { populateFieldSelects(); renderHome(); renderReview(); renderStats(); },
+    toast: showToast
+  };
 
   // Init
   populateFieldSelects(); renderHome(); renderReview(); renderStats();

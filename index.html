@@ -89,8 +89,27 @@
               <button id="reset-bank" class="ghost-action">初期20問に戻す</button>
             </div>
           </article>
+
+          <article class="card wide-card drive-card">
+            <div class="drive-info">
+              <span class="eyebrow">CLOUD</span>
+              <h2>Google Drive 同期</h2>
+              <p id="drive-status" class="drive-status">未接続です。</p>
+              <div class="drive-file-status">
+                <span id="drive-questions-status" class="file-status-chip">questions.xlsx：未選択</span>
+                <span id="drive-progress-status" class="file-status-chip">progress.json：未選択</span>
+              </div>
+              <div class="mini-note">端末内にも即保存します。Drive接続中は回答後に学習履歴を自動同期し、複数デバイスの回答履歴を重複なしでマージします。</div>
+            </div>
+            <div class="drive-actions">
+              <button id="drive-connect" class="secondary-action">Google Driveに接続</button>
+              <button id="pick-questions" class="ghost-action" disabled>questions.xlsxを選択</button>
+              <button id="pick-progress" class="ghost-action" disabled>progress.jsonを選択</button>
+              <button id="sync-drive" class="primary-action compact" disabled>今すぐ同期</button>
+            </div>
+          </article>
         </div>
-        <div class="install-hint">iPadではSafariで開き、共有メニューから「ホーム画面に追加」するとアプリ風に使えます。</div>
+        <div class="install-hint">iPadではChromeで開き、共有メニューから「ホーム画面に追加」するとアプリ風に使えます。</div>
       </section>
 
       <section id="screen-quiz" class="screen">
@@ -191,8 +210,12 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </div>
 
+  <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="seed-data.js"></script>
   <script src="app.js"></script>
+  <script async defer src="https://accounts.google.com/gsi/client"></script>
+  <script async defer src="https://apis.google.com/js/api.js"></script>
+  <script src="drive-sync.js"></script>
 </body>
 </html>

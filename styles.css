@@ -167,3 +167,24 @@ button { -webkit-tap-highlight-color: transparent; }
   .data-actions { justify-content: flex-start; }
   .shortcut-hint { display: none; }
 }
+
+/* Google Drive sync (v1.1) */
+.drive-card { display: flex; justify-content: space-between; gap: 24px; align-items: center; }
+.drive-info { min-width: 0; flex: 1; }
+.drive-info h2 { margin: 6px 0 0; }
+.drive-status { margin: 9px 0 0; font-weight: 750; color: var(--muted); }
+.drive-status.connected { color: var(--green); }
+.drive-status.warning { color: var(--amber); }
+.drive-file-status { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.file-status-chip { display: inline-flex; align-items: center; min-height: 32px; padding: 0 11px; border-radius: 999px; background: #edf2f5; color: var(--muted); font-size: 12px; font-weight: 800; }
+.file-status-chip.ready { background: var(--green-soft); color: var(--green); }
+.drive-actions { display: grid; grid-template-columns: repeat(2, minmax(180px, 1fr)); gap: 10px; min-width: 430px; }
+.drive-actions .primary-action, .drive-actions .secondary-action, .drive-actions .ghost-action { width: 100%; }
+.drive-actions button:disabled { opacity: .48; cursor: not-allowed; }
+@media (max-width: 980px) {
+  .drive-card { align-items: stretch; flex-direction: column; }
+  .drive-actions { min-width: 0; width: 100%; }
+}
+@media (max-width: 620px) {
+  .drive-actions { grid-template-columns: 1fr; }
+}
