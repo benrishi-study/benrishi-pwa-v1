@@ -77,6 +77,81 @@
     if (screen === 'home') renderHome();
     if (screen === 'review') renderReview();
     if (screen === 'stats') renderStats();
+    if (screen === 'quiz') {
+      window.scrollTo(0, 0);
+      scheduleQuizFit();
+    } else {
+      const shell = $('.quiz-shell');
+      if (shell) shell.style.height = '';
+    }
+  }
+
+  // v1.1.1: iPad横画面でもミニテスト全体をビューポート内に収める。
+  // 問題文と解説は各ペイン内で独立スクロールし、長文だけ段階的に縮小する。
+  function fitQuizViewport() {
+    const screen = byId('screen-quiz');
+    const shell = $('.quiz-shell');
+    if (!screen?.classList.contains('active') || !shell) return;
+
+    // スマホ縦画面では従来どおり縦積みにし、iPad横画面・PCだけ固定レイアウトにする。
+    if (window.innerWidth <= 820) {
+      shell.style.height = '';
+      return;
+    }
+
+    const top = shell.getBoundingClientRect().top;
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    const available = Math.max(430, Math.floor(viewportHeight - top - 10));
+    shell.style.height = `${available}px`;
+
+    const questionEl = byId('quiz-question');
+    const explanationEl = byId('explanation-text');
+    if (!questionEl || !explanationEl) return;
+
+    questionEl.classList.remove('fit-compact', 'fit-dense', 'scroll-from-top');
+    explanationEl.classList.remove('fit-compact', 'fit-dense');
+
+    const qLen = (questionEl.textContent || '').replace(/\s+/g, '').length;
+    const eLen = (explanationEl.textContent || '').replace(/\s+/g, '').length;
+    if (qLen > 135) questionEl.classList.add('fit-compact');
+    if (qLen > 245) { questionEl.classList.remove('fit-compact'); questionEl.classList.add('fit-dense'); }
+    if (eLen > 430) explanationEl.classList.add('fit-compact');
+    if (eLen > 800) { explanationEl.classList.remove('fit-compact'); explanationEl.classList.add('fit-dense'); }
+
+    requestAnimationFrame(() => {
+      // 文字数だけでなく実際の表示領域も見て、必要な場合だけ一段階縮小。
+      if (questionEl.scrollHeight > questionEl.clientHeight * 1.18) {
+        if (!questionEl.classList.contains('fit-compact') && !questionEl.classList.contains('fit-dense')) {
+          questionEl.classList.add('fit-compact');
+        } else if (questionEl.classList.contains('fit-compact')) {
+          questionEl.classList.remove('fit-compact');
+          questionEl.classList.add('fit-dense');
+        }
+      }
+      if (explanationEl.scrollHeight > explanationEl.clientHeight * 1.22) {
+        if (!explanationEl.classList.contains('fit-compact') && !explanationEl.classList.contains('fit-dense')) {
+          explanationEl.classList.add('fit-compact');
+        } else if (explanationEl.classList.contains('fit-compact')) {
+          explanationEl.classList.remove('fit-compact');
+          explanationEl.classList.add('fit-dense');
+        }
+      }
+
+      // 長文でスクロールが必要な場合は冒頭が隠れないよう上寄せにする。
+      questionEl.classList.toggle('scroll-from-top', questionEl.scrollHeight > questionEl.clientHeight + 2);
+      questionEl.scrollTop = 0;
+      explanationEl.scrollTop = 0;
+      const articleBox = $('.article-box');
+      if (articleBox) articleBox.scrollTop = 0;
+    });
+  }
+
+  function scheduleQuizFit() {
+    cancelAnimationFrame(scheduleQuizFit._raf || 0);
+    scheduleQuizFit._raf = requestAnimationFrame(() => {
+      fitQuizViewport();
+      setTimeout(fitQuizViewport, 80);
+    });
   }
 
   function populateFieldSelects() {
@@ -200,6 +275,7 @@
     }
     byId('prev-question').disabled = sessionIndex === 0;
     byId('next-question').textContent = sessionIndex === session.length-1 ? '結果を見る →' : '次の問題 →';
+    scheduleQuizFit();
   }
 
   function answerCurrent(answer) {
@@ -349,6 +425,10 @@
     if (e.key.toLowerCase()==='x') answerCurrent('×');
     if (e.key==='Enter' && session.length) nextQuestion();
   });
+
+  window.addEventListener('resize', scheduleQuizFit, { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(scheduleQuizFit, 120), { passive: true });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', scheduleQuizFit, { passive: true });
 
   // Public bridge for Google Drive sync (v1.1)
   window.BenrishiApp = {

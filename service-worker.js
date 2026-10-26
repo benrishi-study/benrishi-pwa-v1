@@ -1,4 +1,4 @@
-const CACHE = 'benrishi-mini-v1.1.0';
+const CACHE = 'benrishi-mini-v1.1.1';
 const CORE = [
   './', './index.html', './styles.css', './app.js', './drive-sync.js', './config.js',
   './seed-data.js', './manifest.webmanifest',
